@@ -1,0 +1,185 @@
+import re
+
+encoding = r"""
+:!      ¡
+:/      ¢
+:L      £
+:x      ¤
+:|      ¦
+:Y      ¥
+:c      ©
+:-      ¬
+:r      ®
+:u      µ
+:1      ½
+:?      ¿
+:E      €
+:A      Æ
+:C      Ç
+:D      Ð
+:N      Ñ
+:*      ×
+:0      Ø
+:O      Œ
+:T      Þ
+:B      ß
+:a      æ
+:c      ç
+:e      ð
+:i      ı
+:j      ȷ
+:n      ñ
+:%      ÷
+:\      ø
+:o      œ
+:t      þ
+''      '
+..      .
+::      :
+``      `
+:P      ¶
+`0      °
+`1      ¹
+`2      ²
+`3      ³
+`4      ⁴
+`5      ⁵
+`6      ⁶
+`7      ⁷
+`8      ⁸
+`9      ⁹
+`+      ⁺
+`-      ⁻
+`=      ⁼
+`(      ⁽
+`)      ⁾
+`B      Ɓ
+`C      Ƈ
+`D      Ɗ
+`F      Ƒ
+`G      Ɠ
+`K      Ƙ
+`M      Ɱ
+`N      Ɲ
+`P      Ƥ
+`T      Ƭ
+`U      Ʋ
+`Z      Ȥ
+`b      ɓ
+`c      ƈ
+`d      ɗ
+`f      ƒ
+`g      ɠ
+`h      ɦ
+`k      ƙ
+`m      ɱ
+`n      ɲ
+`p      ƥ
+`q      ʠ
+`r      ɼ
+`s      ʂ
+`t      ƭ
+`u      ʋ
+`z      ȥ
+.A      Ạ
+.B      Ḅ
+.D      Ḍ
+.E      Ẹ
+.H      Ḥ
+.I      Ị
+.K      Ḳ
+.L      Ḷ
+.M      Ṃ
+.N      Ṇ
+.O      Ọ
+.R      Ṛ
+.S      Ṣ
+.T      Ṭ
+.U      Ụ
+.V      Ṿ
+.W      Ẉ
+.Y      Ỵ
+.Z      Ẓ
+'A      Ȧ
+'B      Ḃ
+'C      Ċ
+'D      Ḋ
+'E      Ė
+'F      Ḟ
+'G      Ġ
+'H      Ḣ
+'I      İ
+'L      Ŀ
+'M      Ṁ
+'N      Ṅ
+'O      Ȯ
+'P      Ṗ
+'R      Ṙ
+'S      Ṡ
+'T      Ṫ
+'W      Ẇ
+'X      Ẋ
+'Y      Ẏ
+'Z      Ż
+.a      ạ
+.b      ḅ
+.d      ḍ
+.e      ẹ
+.h      ḥ
+.i      ị
+.k      ḳ
+.l      ḷ
+.m      ṃ
+.n      ṇ
+.o      ọ
+.r      ṛ
+.s      ṣ
+.t      ṭ
+.u      ụ
+.v      ṿ
+.w      ẉ
+.y      ỵ
+.z      ẓ
+'a      ȧ
+'b      ḃ
+'c      ċ
+'d      ḋ
+'e      ė
+'f      ḟ
+'g      ġ
+'h      ḣ
+'l      ŀ
+'m      ṁ
+'n      ṅ
+'o      ȯ
+'p      ṗ
+'r      ṙ
+'s      ṡ
+'t      ṫ
+'w      ẇ
+'x      ẋ
+'y      ẏ
+'z      ż
+:<      «
+:>      »
+:(      ‘
+:)      ’
+:{      “
+:}      ”
+"""
+
+encoding = dict(line.split() for line in encoding.strip().splitlines())
+decoding = { v: k for (k, v) in encoding.items() }
+
+def compile_search(hash):
+	escaped = [re.escape(key) for key in hash.keys()]
+	search = re.compile(r"(" + "|".join(escaped) + r")")
+	return search
+
+
+def translate_func(coding):
+	search = compile_search(coding)
+	return lambda string: search.sub(lambda r: coding[r.group()], string)
+
+ascii_to_jelly = translate_func(encoding)
+jelly_to_ascii = translate_func(decoding)

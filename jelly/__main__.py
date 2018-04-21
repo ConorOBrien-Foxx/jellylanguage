@@ -6,9 +6,10 @@ if __package__ == '':
 
 	path[0] = dirname(path[0])
 
-from jelly import code_page, main, try_eval
+from jelly import code_page, main, try_eval, ascii_to_jelly, jelly_to_ascii
 from sys import argv
 
+translate = False
 flag_utf8 = False
 end = ''
 
@@ -22,6 +23,9 @@ usage = '''Usage:
 
     jelly fu <file> [input]   Reads the Jelly program stored in the
                               specified file, using the UTF-8 encoding.
+    
+    jelly ft <file>           Translates an ascii representation of Jelly
+                              code stored in the specified file into Jelly.
 
     jelly e <code> [input]    Reads a Jelly program as a command line
                               argument, using the Jelly code page. This
@@ -34,6 +38,9 @@ usage = '''Usage:
                               requires setting the environment variable
                               LANG (or your OS's equivalent) to en_US.UTF8
                               or compatible.
+    
+    jelly et <code>           Translates an ascii representation of Jelly
+                              code from a command line argument.
 
     Append an `n` to the flag list to append a trailing newline to the
     program's output.
@@ -52,6 +59,8 @@ for char in argv[1]:
 		flag_file = False
 	elif char == 'n':
 		end = '\n'
+	elif char == 't':
+		translate = True
 
 if flag_file:
 	with open(argv[2], 'rb') as file:
@@ -66,6 +75,10 @@ else:
 		code = ''.join(char for char in code.replace('\n', '¶') if char in code_page)
 	else:
 		code = ''.join(code_page[ord(i)] for i in code)
+
+if translate:
+	print(ascii_to_jelly(code))
+	exit()
 
 args = list(map(try_eval, argv[3:]))
 
